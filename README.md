@@ -110,8 +110,8 @@ NUXT_FIREBASE_SERVICE_ACCOUNT={"type":"service_account","project_id":"…"}
 
 ### 3. Verder in de console
 
-- **Authentication** → *Sign-in method* → zet **Anonymous** aan.
-  (De app logt spelers in met custom tokens; die hebben een actieve Auth-provider nodig.)
+- **Authentication** → één keer *Get started* aanklikken. Een specifieke provider is niet nodig:
+  de app logt spelers in met custom tokens.
 - **Firestore Database** → aanmaken in regio `eur3` of `europe-west1`.
 - Rules uitrollen: `firebase deploy --only firestore:rules`
 
