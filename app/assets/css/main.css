@@ -1,0 +1,527 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Padel Connect — design tokens
+   Navy #001F42 + lime #C2D92E + cream #F7F9EF, lifted from the brand deck.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  --color-navy-950: #00122a;
+  --color-navy-900: #001f42;
+  --color-navy-800: #052a55;
+  --color-navy-700: #0b3768;
+  --color-navy-600: #14477f;
+  --color-navy-500: #1f5a9b;
+
+  --color-lime-50: #f7fbe3;
+  --color-lime-100: #ecf6bd;
+  --color-lime-200: #dcee88;
+  --color-lime-300: #cfe653;
+  --color-lime-400: #c2d92e;
+  --color-lime-500: #b6ca2a;
+  --color-lime-600: #94a71f;
+  --color-lime-700: #6f7d18;
+
+  --color-cream: #f7f9ef;
+  --color-cream-200: #eef2dd;
+  --color-ink: #001f42;
+
+  --color-flame: #ff6b4a;
+  --color-berry: #ff4d8d;
+  --color-sky: #46c8ff;
+
+  --font-display: "Archivo", "Archivo Fallback", system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Plus Jakarta Sans Fallback", system-ui, sans-serif;
+
+  /* Deliberately tighter than Tailwind's defaults: this UI reads as crisp
+     panels, not lozenges. `rounded-2xl` is the house card radius. */
+  --radius-xs: 0.1875rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.625rem;
+  --radius-2xl: 0.875rem;
+  --radius-3xl: 1.125rem;
+  --radius-4xl: 1.375rem;
+
+  --ease-spring: linear(0, 0.01, 0.04 2.2%, 0.17 4.7%, 0.68 11.4%, 0.87, 1.02, 1.1 19%, 1.12, 1.12, 1.1, 1.06, 1.02 31%, 0.99, 0.98, 0.99, 1.0 46%, 1.0);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ─────────────────────────────── base ──────────────────────────────────── */
+/* Inside `@layer base` on purpose: unlayered rules outrank every Tailwind
+   layer, so a bare `button { color: inherit }` would quietly beat
+   `text-lime-400` on any button. */
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --app-pad: max(1rem, env(safe-area-inset-left));
+    --bottom-safe: env(safe-area-inset-bottom, 0px);
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html,
+  body,
+  #__nuxt {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-navy-950);
+    color: var(--color-cream);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: none;
+  }
+
+  h1, h2, h3, h4,
+  .font-display {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 0.95;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  input, textarea, select {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* iOS zooms in on any field below 16px — never let that happen. */
+  input, textarea, select {
+    font-size: max(16px, 1rem);
+  }
+
+  ::selection {
+    background: var(--color-lime-400);
+    color: var(--color-navy-900);
+  }
+
+  /* ───────────────────────────── scrollbars ──────────────────────────────── */
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--color-lime-400) 40%, transparent) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--color-lime-400) 40%, transparent);
+    border-radius: 99px;
+  }
+}
+
+/* ═════════════════════════════ components ═══════════════════════════════ */
+
+@layer components {
+  .pc-shell {
+    position: relative;
+    min-height: 100dvh;
+    isolation: isolate;
+    overflow-x: clip;
+  }
+
+  /* Soft lime/navy aurora that lives behind every player screen. */
+  .pc-aurora {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 80% at 10% -10%, color-mix(in oklab, var(--color-lime-400) 24%, transparent), transparent 60%),
+      radial-gradient(100% 70% at 100% 0%, color-mix(in oklab, var(--color-sky) 16%, transparent), transparent 55%),
+      radial-gradient(130% 90% at 50% 110%, color-mix(in oklab, var(--color-navy-600) 70%, transparent), transparent 65%),
+      var(--color-navy-950);
+  }
+
+  .pc-grain {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.35;
+    mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  }
+
+  .pc-card {
+    position: relative;
+    border-radius: var(--radius-2xl);
+    background: color-mix(in oklab, var(--color-navy-800) 72%, transparent);
+    border: 1px solid color-mix(in oklab, var(--color-cream) 12%, transparent);
+    backdrop-filter: blur(16px) saturate(140%);
+    box-shadow:
+      0 1px 0 0 color-mix(in oklab, var(--color-cream) 10%, transparent) inset,
+      0 24px 48px -24px rgb(0 0 0 / 0.7);
+  }
+
+  .pc-card-light {
+    border-radius: var(--radius-2xl);
+    background: var(--color-cream);
+    color: var(--color-ink);
+    border: 1px solid color-mix(in oklab, var(--color-ink) 10%, transparent);
+    box-shadow: 0 18px 40px -28px rgb(0 31 66 / 0.45);
+  }
+
+  /* ── buttons ──────────────────────────────────────────────────────────── */
+
+  .pc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.95rem 1.5rem;
+    border-radius: var(--radius-xl);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.975rem;
+    letter-spacing: 0.01em;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition:
+      transform 0.28s var(--ease-spring),
+      box-shadow 0.3s var(--ease-out-soft),
+      filter 0.2s ease,
+      opacity 0.2s ease;
+    will-change: transform;
+  }
+
+  .pc-btn:active:not(:disabled) {
+    transform: scale(0.955);
+  }
+
+  .pc-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .pc-btn-primary {
+    background: linear-gradient(135deg, var(--color-lime-300), var(--color-lime-500));
+    color: var(--color-navy-900);
+    box-shadow:
+      0 10px 30px -10px color-mix(in oklab, var(--color-lime-400) 70%, transparent),
+      0 1px 0 0 rgb(255 255 255 / 0.4) inset;
+  }
+
+  .pc-btn-primary:hover:not(:disabled) {
+    filter: brightness(1.06);
+    box-shadow: 0 16px 40px -12px color-mix(in oklab, var(--color-lime-400) 85%, transparent);
+  }
+
+  .pc-btn-ghost {
+    background: color-mix(in oklab, var(--color-cream) 8%, transparent);
+    color: var(--color-cream);
+    border: 1px solid color-mix(in oklab, var(--color-cream) 18%, transparent);
+  }
+
+  .pc-btn-ghost:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--color-cream) 14%, transparent);
+  }
+
+  .pc-btn-danger {
+    background: color-mix(in oklab, var(--color-flame) 18%, transparent);
+    color: var(--color-flame);
+    border: 1px solid color-mix(in oklab, var(--color-flame) 40%, transparent);
+  }
+
+  /* Light sweep across primary buttons — subtle, only on hover. */
+  .pc-btn-primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    translate: -120% 0;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.55), transparent);
+    transition: translate 0.7s var(--ease-out-soft);
+  }
+
+  .pc-btn-primary:hover::after {
+    translate: 120% 0;
+  }
+
+  /* ── chips / pills ────────────────────────────────────────────────────── */
+
+  .pc-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius-lg);
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: color-mix(in oklab, var(--color-cream) 8%, transparent);
+    border: 1px solid color-mix(in oklab, var(--color-cream) 16%, transparent);
+    color: color-mix(in oklab, var(--color-cream) 85%, transparent);
+    cursor: pointer;
+    transition: transform 0.25s var(--ease-spring), background 0.2s, border-color 0.2s, color 0.2s;
+    user-select: none;
+  }
+
+  .pc-chip:active {
+    transform: scale(0.94);
+  }
+
+  .pc-chip[data-on="true"] {
+    background: linear-gradient(135deg, var(--color-lime-300), var(--color-lime-500));
+    border-color: transparent;
+    color: var(--color-navy-900);
+    box-shadow: 0 6px 18px -8px color-mix(in oklab, var(--color-lime-400) 90%, transparent);
+  }
+
+  .pc-label {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--color-lime-300) 85%, transparent);
+  }
+
+  .pc-input {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border-radius: var(--radius-xl);
+    background: color-mix(in oklab, var(--color-navy-950) 55%, transparent);
+    border: 1px solid color-mix(in oklab, var(--color-cream) 16%, transparent);
+    color: var(--color-cream);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.25s;
+  }
+
+  .pc-input::placeholder {
+    color: color-mix(in oklab, var(--color-cream) 36%, transparent);
+  }
+
+  .pc-input:focus {
+    border-color: var(--color-lime-400);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-lime-400) 18%, transparent);
+  }
+
+  /* ── court visual ─────────────────────────────────────────────────────── */
+
+  .pc-court {
+    position: relative;
+    aspect-ratio: 10 / 6;
+    border-radius: var(--radius-xl);
+    background:
+      linear-gradient(170deg, color-mix(in oklab, var(--color-sky) 22%, var(--color-navy-800)), var(--color-navy-900));
+    border: 2px solid color-mix(in oklab, var(--color-cream) 30%, transparent);
+    overflow: hidden;
+  }
+
+  .pc-court::before,
+  .pc-court::after {
+    content: "";
+    position: absolute;
+    background: color-mix(in oklab, var(--color-cream) 34%, transparent);
+  }
+
+  /* net */
+  .pc-court::before {
+    inset: 0 calc(50% - 1px);
+    background:
+      repeating-linear-gradient(to bottom,
+        color-mix(in oklab, var(--color-cream) 55%, transparent) 0 4px,
+        transparent 4px 8px);
+  }
+
+  /* service line */
+  .pc-court::after {
+    inset: calc(50% - 1px) 12%;
+    height: 2px;
+  }
+}
+
+/* ═══════════════════════════════ animation ══════════════════════════════ */
+
+@keyframes pc-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(3deg); }
+}
+
+@keyframes pc-pulse-ring {
+  0% { transform: scale(0.82); opacity: 0.75; }
+  70% { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes pc-rise {
+  from { opacity: 0; transform: translateY(18px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes pc-pop {
+  0% { opacity: 0; transform: scale(0.6); }
+  60% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pc-shimmer {
+  to { background-position: 200% 0; }
+}
+
+@keyframes pc-spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pc-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@utility animate-float {
+  animation: pc-float 7s var(--ease-in-out-soft) infinite;
+}
+
+@utility animate-rise {
+  animation: pc-rise 0.6s var(--ease-out-soft) both;
+}
+
+@utility animate-pop {
+  animation: pc-pop 0.5s var(--ease-spring) both;
+}
+
+@utility animate-spin-slow {
+  animation: pc-spin-slow 18s linear infinite;
+}
+
+@utility animate-marquee {
+  animation: pc-marquee 24s linear infinite;
+}
+
+.pc-stagger > * {
+  animation: pc-rise 0.55s var(--ease-out-soft) both;
+}
+
+.pc-stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.pc-stagger > *:nth-child(2) { animation-delay: 0.10s; }
+.pc-stagger > *:nth-child(3) { animation-delay: 0.16s; }
+.pc-stagger > *:nth-child(4) { animation-delay: 0.22s; }
+.pc-stagger > *:nth-child(5) { animation-delay: 0.28s; }
+.pc-stagger > *:nth-child(6) { animation-delay: 0.34s; }
+.pc-stagger > *:nth-child(7) { animation-delay: 0.40s; }
+.pc-stagger > *:nth-child(8) { animation-delay: 0.46s; }
+.pc-stagger > *:nth-child(n+9) { animation-delay: 0.52s; }
+
+.pc-shimmer {
+  background: linear-gradient(
+    100deg,
+    color-mix(in oklab, var(--color-cream) 8%, transparent) 20%,
+    color-mix(in oklab, var(--color-cream) 18%, transparent) 40%,
+    color-mix(in oklab, var(--color-cream) 8%, transparent) 60%
+  );
+  background-size: 200% 100%;
+  animation: pc-shimmer 1.6s linear infinite;
+}
+
+/* ─────────────────────── route & layout transitions ────────────────────── */
+
+.page-enter-active,
+.layout-enter-active {
+  transition: opacity 0.32s var(--ease-out-soft), transform 0.42s var(--ease-out-soft), filter 0.32s ease;
+}
+
+.page-leave-active,
+.layout-leave-active {
+  transition: opacity 0.2s ease-in, transform 0.26s var(--ease-in-out-soft), filter 0.2s ease;
+}
+
+.page-enter-from,
+.layout-enter-from {
+  opacity: 0;
+  transform: translateY(14px) scale(0.985);
+  filter: blur(6px);
+}
+
+.page-leave-to,
+.layout-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.99);
+  filter: blur(4px);
+}
+
+/* Onboarding steps slide sideways like a story. */
+.step-enter-active,
+.step-leave-active {
+  transition: opacity 0.3s var(--ease-out-soft), transform 0.42s var(--ease-out-soft);
+}
+
+.step-enter-from {
+  opacity: 0;
+  transform: translateX(42px);
+}
+
+.step-leave-to {
+  opacity: 0;
+  transform: translateX(-42px);
+  position: absolute;
+  inset: 0;
+}
+
+.step-back-enter-from {
+  opacity: 0;
+  transform: translateX(-42px);
+}
+
+.step-back-leave-to {
+  opacity: 0;
+  transform: translateX(42px);
+  position: absolute;
+  inset: 0;
+}
+
+/* Generic list enter/leave for connection cards and toasts. */
+.pop-enter-active {
+  transition: opacity 0.3s ease, transform 0.5s var(--ease-spring);
+}
+
+.pop-leave-active {
+  transition: opacity 0.2s ease, transform 0.25s ease-in;
+  position: absolute;
+}
+
+.pop-enter-from {
+  opacity: 0;
+  transform: scale(0.85) translateY(10px);
+}
+
+.pop-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.pop-move {
+  transition: transform 0.45s var(--ease-out-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.08s !important;
+  }
+
+  .pc-aurora {
+    background: var(--color-navy-950);
+  }
+}

@@ -1,0 +1,13 @@
+node_modules
+.nuxt
+.output
+.data
+.env
+.env.local
+dist
+*.log
+.DS_Store
+.vercel
+
+# Brand deck — source material, not needed to build (23 MB)
+*.pdf

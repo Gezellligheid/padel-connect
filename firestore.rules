@@ -1,0 +1,79 @@
+rules_version = '2';
+
+// Padel Connect — Firestore security rules.
+//
+// Every write in this app goes through the Nitro API routes, which run with
+// the Admin SDK and therefore bypass these rules. Clients only ever *read*.
+// So: read access is scoped tightly, and write access is denied everywhere.
+//
+// Deploy with:  firebase deploy --only firestore:rules
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isCrew() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+
+    // ── public profiles ────────────────────────────────────────────────────
+    // Name, photo, level, hobbies and availability are visible to every
+    // participant — that is the point of the app.
+    match /players/{playerId} {
+      allow read: if signedIn();
+      allow write: if false;
+
+      // Phone numbers live one level deeper and never leave the server:
+      // the client asks /api/action → 'player.contacts' for the numbers it
+      // is allowed to see, so no direct read is needed at all.
+      match /private/{document=**} {
+        allow read, write: if false;
+      }
+    }
+
+    // ── event state, rounds and matches ────────────────────────────────────
+    match /event/{document} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /rounds/{roundId} {
+      allow read: if signedIn();
+      allow write: if false;
+
+      match /matches/{matchId} {
+        allow read: if signedIn();
+        allow write: if false;
+      }
+    }
+
+    // ── connections ────────────────────────────────────────────────────────
+    // A player may only see the edges they are part of; the crew sees all.
+    match /connections/{connectionId} {
+      allow read: if isCrew()
+        || (signedIn() && (resource.data.from == request.auth.uid
+                        || resource.data.to == request.auth.uid));
+      allow write: if false;
+    }
+
+    // ── server-only collections ────────────────────────────────────────────
+    // `pins` maps a pincode to a player; `pairs` tracks who already played
+    // together. Neither is ever read by a browser.
+    match /pins/{pin} {
+      allow read, write: if false;
+    }
+
+    match /pairs/{pairId} {
+      allow read: if isCrew();
+      allow write: if false;
+    }
+
+    // Anything not matched above is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
