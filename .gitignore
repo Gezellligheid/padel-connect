@@ -11,3 +11,6 @@ dist
 
 # Brand deck — source material, not needed to build (23 MB)
 *.pdf
+
+# Lokale mockup-harness, niet meeleveren
+public/__mockup.html

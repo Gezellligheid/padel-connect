@@ -43,7 +43,13 @@ const HIGHLIGHTS = [
       </div>
 
       <div class="lg:order-1">
-      <h1 class="animate-rise mt-9 text-center font-display text-[2.7rem] leading-[0.88] sm:text-6xl lg:mt-0 lg:text-left lg:text-[4.25rem]" style="animation-delay:.08s">
+      <!-- Flex-wrap, not inline spans: Vue's compiler strips the whitespace
+           between elements, which glued the three words into one unbreakable
+           token that overflowed at phone width. -->
+      <h1
+        class="animate-rise mt-9 flex flex-wrap justify-center gap-x-3 font-display text-[clamp(2.4rem,11vw,3.75rem)] leading-[0.88] lg:mt-0 lg:justify-start lg:text-[4.25rem]"
+        style="animation-delay:.08s"
+      >
         <span class="text-cream">MEET.</span>
         <span class="text-lime-400">PLAY.</span>
         <span class="bg-linear-to-r from-[color:var(--color-berry)] to-[color:var(--color-flame)] bg-clip-text text-transparent">PARTY.</span>
